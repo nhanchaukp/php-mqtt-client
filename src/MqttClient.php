@@ -1147,21 +1147,25 @@ class MqttClient implements ClientContract
             socket_set_blocking($this->socket, true);
         }
 
-        $result = @fwrite($this->socket, $data, $length);
+        $byteWrite = 0;
+        while($byteWrite < $length){
+            $result = @fwrite($this->socket, $data, 1048576);
+            if ($result === false || $result === 0) {
+                $this->logger->error('Sending data over the socket to the broker failed.');
+                throw new DataTransferException(
+                    DataTransferException::EXCEPTION_TX_DATA,
+                    'Sending data over the socket failed. Has it been closed?'
+                );
+            }
+            $byteWrite += $result;
+            $this->logger->debug("Sending data {byteWrite}/{length} bytes", ['byteWrite' => $byteWrite, 'length' => $length]);
+        }
 
         if ($this->settings->shouldUseBlockingSocket()) {
             socket_set_blocking($this->socket, false);
         }
 
-        if ($result === false || $result !== $length) {
-            $this->logger->error('Sending data over the socket to the broker failed.');
-            throw new DataTransferException(
-                DataTransferException::EXCEPTION_TX_DATA,
-                'Sending data over the socket failed. Has it been closed?'
-            );
-        }
-
-        $this->bytesSent += $length;
+        $this->bytesSent += $byteWrite;
 
         $this->logger->debug('Sent data over the socket: {data}', ['data' => $data]);
 
