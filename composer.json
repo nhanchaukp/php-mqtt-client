@@ -1,5 +1,5 @@
 {
-    "name": "php-mqtt/client",
+    "name": "nhanchaukp/php-mqtt-client",
     "description": "An MQTT client written in and for PHP.",
     "type": "library",
     "keywords": [
@@ -11,8 +11,8 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Marvin Mall",
-            "email": "marvin-mall@msn.com",
+            "name": "NhanChauKP",
+            "email": "nhanchauthai@gmail.com",
             "role": "developer"
         }
     ],
